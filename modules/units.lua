@@ -43,6 +43,21 @@ local function ReregisterUnitEvents(self)
 	end
 end
 
+-- Events that no longer exist on some clients, but have a direct replacement
+local eventReplacements = {["UNIT_HEALTH_FREQUENT"] = "UNIT_HEALTH"}
+
+-- Returns the event to actually register, or nil if this client has no equivalent for it
+local function mapEvent(event)
+	if( ShadowUF.API.IsEventValid(event) ) then return event end
+
+	local replacement = eventReplacements[event]
+	if( replacement and ShadowUF.API.IsEventValid(replacement) ) then return replacement end
+
+	return nil
+end
+
+Units.mapEvent = mapEvent
+
 -- Register an event that should always call the frame
 local function RegisterNormalEvent(self, event, handler, func, unitOverride)
 	-- Make sure the handler/func exists
@@ -50,6 +65,10 @@ local function RegisterNormalEvent(self, event, handler, func, unitOverride)
 		error(string.format("Invalid handler/function passed for %s on event %s, the function %s does not exist.", self:GetName() or tostring(self), tostring(event), tostring(func)), 3)
 		return
 	end
+
+	-- This client doesn't know the event, nothing to register
+	event = mapEvent(event)
+	if( not event ) then return end
 
 	if( unitEvents[event] and not ShadowUF.fakeUnits[self.unitRealType] ) then
 		self:BlizzRegisterUnitEvent(event, unitOverride or self.unitOwner, nil)
@@ -90,6 +109,9 @@ end
 
 -- Register an event thats only called if it's for the actual unit
 local function RegisterUnitEvent(self, event, handler, func)
+	event = mapEvent(event)
+	if( not event ) then return end
+
 	unitEvents[event] = true
 	RegisterNormalEvent(self, event, handler, func)
 end

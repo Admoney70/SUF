@@ -104,3 +104,27 @@ elseif( not UnitInPhase ) then
 		return true
 	end
 end
+
+-- Not every event exists on every client, UNIT_HEALTH_FREQUENT for example was folded back into
+-- UNIT_HEALTH. Registering an unknown event throws an error, so let the callers check first.
+local validEvents = {}
+local eventValidationFrame
+
+function ShadowUF.API.IsEventValid(event)
+	if( validEvents[event] == nil ) then
+		if( C_EventUtils and C_EventUtils.IsEventValid ) then
+			validEvents[event] = C_EventUtils.IsEventValid(event) and true or false
+		else
+			eventValidationFrame = eventValidationFrame or CreateFrame("Frame")
+
+			local valid = pcall(eventValidationFrame.RegisterEvent, eventValidationFrame, event)
+			if( valid ) then
+				eventValidationFrame:UnregisterEvent(event)
+			end
+
+			validEvents[event] = valid
+		end
+	end
+
+	return validEvents[event]
+end

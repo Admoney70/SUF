@@ -45,6 +45,7 @@ read_globals = {
 
 	-- API functions
 	"C_AddOns",
+	"C_EventUtils",
 	"C_PartyInfo",
 	"C_Reputation",
 	"AuraUtil",
