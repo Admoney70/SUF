@@ -687,29 +687,35 @@ end
 local function basicHideBlizzardFrames(...)
 	for i=1, select("#", ...) do
 		local frame = select(i, ...)
-		frame:UnregisterAllEvents()
-		frame:HookScript("OnShow", rehideFrame)
-		frame:Hide()
+		-- Not every client has every frame, simply skip the ones that don't exist
+		if( frame ) then
+			frame:UnregisterAllEvents()
+			frame:HookScript("OnShow", rehideFrame)
+			frame:Hide()
+		end
 	end
 end
 
 local function hideBlizzardFrames(taint, ...)
 	for i=1, select("#", ...) do
 		local frame = select(i, ...)
-		UnregisterUnitWatch(frame)
-		frame:UnregisterAllEvents()
-		frame:Hide()
+		-- Not every client has every frame, simply skip the ones that don't exist
+		if( frame ) then
+			UnregisterUnitWatch(frame)
+			frame:UnregisterAllEvents()
+			frame:Hide()
 
-		if( frame.manabar ) then frame.manabar:UnregisterAllEvents() end
-		if( frame.healthbar ) then frame.healthbar:UnregisterAllEvents() end
-		if( frame.spellbar ) then frame.spellbar:UnregisterAllEvents() end
-		if( frame.powerBarAlt ) then frame.powerBarAlt:UnregisterAllEvents() end
+			if( frame.manabar ) then frame.manabar:UnregisterAllEvents() end
+			if( frame.healthbar ) then frame.healthbar:UnregisterAllEvents() end
+			if( frame.spellbar ) then frame.spellbar:UnregisterAllEvents() end
+			if( frame.powerBarAlt ) then frame.powerBarAlt:UnregisterAllEvents() end
 
-		if( taint ) then
-			frame.Show = ShadowUF.noop
-		else
-			frame:SetParent(ShadowUF.hiddenFrame)
-			frame:HookScript("OnShow", rehideFrame)
+			if( taint ) then
+				frame.Show = ShadowUF.noop
+			else
+				frame:SetParent(ShadowUF.hiddenFrame)
+				frame:HookScript("OnShow", rehideFrame)
+			end
 		end
 	end
 end
@@ -747,7 +753,7 @@ function ShadowUF:HideBlizzardFrames()
 		end
 	end
 
-	if( CompactRaidFrameManager ) then
+	if( CompactRaidFrameManager and CompactRaidFrameContainer ) then
 		if( self.db.profile.hidden.raid and not active_hiddens.raidTriggered ) then
 			active_hiddens.raidTriggered = true
 
