@@ -27,8 +27,14 @@ jobs:
         with:
           args: -d
 
+      - name: Show what was packaged
+        run: ls -lR .release
+
+      # The finished addon folders, ready to be copied into Interface/AddOns
       - uses: actions/upload-artifact@v4
         with:
           name: ShadowedUnitFrames
-          path: .release/*.zip
+          path: |
+            .release/ShadowedUnitFrames
+            .release/ShadowedUF_Options
           if-no-files-found: error
