@@ -99,10 +99,10 @@ function ShadowUF.UnitAuraBySpell(unit, spell, filter)
 	local index = 0
 	while true do
 		index = index + 1
-		local name, _, _, _, _, _, _, _, _, spellID = UnitAura(unit, index, filter)
+		local name, _, _, _, _, _, _, _, _, spellID = ShadowUF.API.UnitAura(unit, index, filter)
 		if not name then break end
 		if (type(spell) == "string" and spell == name) or (type(spell) == "number" and spell == spellID) then
-			return UnitAura(unit, index, filter)
+			return ShadowUF.API.UnitAura(unit, index, filter)
 		end
 	end
 end

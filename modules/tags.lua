@@ -380,14 +380,14 @@ end})
 
 -- Going to have to start using an env wrapper for tags I think
 local Druid = {}
-Druid.CatForm = GetSpellInfo(768)
-Druid.MoonkinForm = GetSpellInfo(24858)
-Druid.TravelForm = GetSpellInfo(783)
-Druid.BearForm = GetSpellInfo(5487)
-Druid.TreeForm = GetSpellInfo(33891)
-Druid.AquaticForm = GetSpellInfo(1066)
-Druid.SwiftFlightForm = GetSpellInfo(40120)
-Druid.FlightForm = GetSpellInfo(33943)
+Druid.CatForm = ShadowUF.API.GetSpellName(768)
+Druid.MoonkinForm = ShadowUF.API.GetSpellName(24858)
+Druid.TravelForm = ShadowUF.API.GetSpellName(783)
+Druid.BearForm = ShadowUF.API.GetSpellName(5487)
+Druid.TreeForm = ShadowUF.API.GetSpellName(33891)
+Druid.AquaticForm = ShadowUF.API.GetSpellName(1066)
+Druid.SwiftFlightForm = ShadowUF.API.GetSpellName(40120)
+Druid.FlightForm = ShadowUF.API.GetSpellName(33943)
 ShadowUF.Druid = Druid
 
 Tags.defaultTags = {

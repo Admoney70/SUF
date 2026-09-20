@@ -30,7 +30,7 @@ function Auras:OnEnable(frame)
 			end
 		end)
 	else
-		frame.auras.auraFunc = UnitAura
+		frame.auras.auraFunc = ShadowUF.API.UnitAura
 	end
 end
 
@@ -219,7 +219,7 @@ local function showTooltip(self)
 	if( self.filter == "TEMP" ) then
 		GameTooltip:SetInventoryItem("player", self.auraID)
 		self:SetScript("OnUpdate", nil)
-	elseif( self.unit == "target" and not UnitAura(self.unit, self.auraID, self.filter) ) then
+	elseif( self.unit == "target" and not ShadowUF.API.UnitAura(self.unit, self.auraID, self.filter) ) then
 		GameTooltip:SetSpellByID(self.spellID, true, true)
 		self:SetScript("OnUpdate", nil)
 	else

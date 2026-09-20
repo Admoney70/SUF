@@ -22,6 +22,7 @@ ignore = {
 
 globals = {
 	"ShadowUF",
+	"UnitInPhase",
 	"ClickCastFrames",
 	"CONFIGMODE_CALLBACKS",
 	"SlashCmdList",
@@ -46,7 +47,11 @@ read_globals = {
 	"C_AddOns",
 	"C_PartyInfo",
 	"C_Reputation",
+	"AuraUtil",
+	"C_Spell",
 	"C_Timer",
+	"C_UnitAuras",
+	"UnitPhaseReason",
 	"CancelUnitBuff",
 	"CanHearthAndResurrectFromArea",
 	"CastingInfo",
@@ -110,7 +115,6 @@ read_globals = {
 	"UnitHealth",
 	"UnitHealthMax",
 	"UnitInParty",
-	"UnitInPhase",
 	"UnitInRaid",
 	"UnitInRange",
 	"UnitIsBattlePetCompanion",

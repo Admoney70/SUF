@@ -1,25 +1,28 @@
+local GetSpellName = ShadowUF.API.GetSpellName
+local IsSpellUsable = ShadowUF.API.IsSpellUsable
+
 local Range = {
 	friendly = {
-		["PRIEST"] = GetSpellInfo(139), -- Renew
-		["DRUID"] = GetSpellInfo(774), -- Rejuvenation
-		["PALADIN"] = GetSpellInfo(19750), -- Flash of Light
-		["SHAMAN"] = GetSpellInfo(331), -- Healing Wave
-		["WARLOCK"] = GetSpellInfo(5697), -- Unending Breath
-		["MAGE"] = GetSpellInfo(604), -- Dampen Magic
+		["PRIEST"] = GetSpellName(139), -- Renew
+		["DRUID"] = GetSpellName(774), -- Rejuvenation
+		["PALADIN"] = GetSpellName(19750), -- Flash of Light
+		["SHAMAN"] = GetSpellName(331), -- Healing Wave
+		["WARLOCK"] = GetSpellName(5697), -- Unending Breath
+		["MAGE"] = GetSpellName(604), -- Dampen Magic
 	},
 	hostile = {
-		["DRUID"] = GetSpellInfo(5176),  -- Wrath
-		["HUNTER"] = GetSpellInfo(1978), -- Serpent Sting
-		["MAGE"] = GetSpellInfo(133), -- Fireball
-		--["PALADIN"] = GetSpellInfo(62124), -- Hand of Reckoning
+		["DRUID"] = GetSpellName(5176),  -- Wrath
+		["HUNTER"] = GetSpellName(1978), -- Serpent Sting
+		["MAGE"] = GetSpellName(133), -- Fireball
+		--["PALADIN"] = GetSpellName(62124), -- Hand of Reckoning
 		["PRIEST"] = {
-			GetSpellInfo(589), -- Shadow Word: Pain
-			GetSpellInfo(585), -- Smite
+			GetSpellName(589), -- Shadow Word: Pain
+			GetSpellName(585), -- Smite
 		},
-		--["ROGUE"] = GetSpellInfo(1725), -- Distract
-		["SHAMAN"] = GetSpellInfo(403), -- Lightning Bolt
-		["WARLOCK"] = GetSpellInfo(686), -- Shadow Bolt
-		["WARRIOR"] = GetSpellInfo(355), -- Taunt
+		--["ROGUE"] = GetSpellName(1725), -- Distract
+		["SHAMAN"] = GetSpellName(403), -- Lightning Bolt
+		["WARLOCK"] = GetSpellName(686), -- Shadow Bolt
+		["WARRIOR"] = GetSpellName(355), -- Taunt
 	},
 }
 
@@ -56,22 +59,22 @@ end
 
 local function updateSpellCache(category)
 	rangeSpells[category] = nil
-	if( IsUsableSpell(ShadowUF.db.profile.range[category .. playerClass]) ) then
+	if( IsSpellUsable(ShadowUF.db.profile.range[category .. playerClass]) ) then
 		rangeSpells[category] = ShadowUF.db.profile.range[category .. playerClass]
 
-	elseif( IsUsableSpell(ShadowUF.db.profile.range[category .. "Alt" .. playerClass]) ) then
+	elseif( IsSpellUsable(ShadowUF.db.profile.range[category .. "Alt" .. playerClass]) ) then
 		rangeSpells[category] = ShadowUF.db.profile.range[category .. "Alt" .. playerClass]
 
 	elseif( Range[category][playerClass] ) then
 		if( type(Range[category][playerClass]) == "table" ) then
 			for i = 1, #Range[category][playerClass] do
 				local spell = Range[category][playerClass][i]
-				if( IsUsableSpell(spell) ) then
+				if( IsSpellUsable(spell) ) then
 					rangeSpells[category] = spell
 					break
 				end
 			end
-		elseif( IsUsableSpell(Range[category][playerClass]) ) then
+		elseif( IsSpellUsable(Range[category][playerClass]) ) then
 			rangeSpells[category] = Range[category][playerClass]
 		end
 	end
