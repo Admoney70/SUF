@@ -1,0 +1,34 @@
+# Builds a ready to install copy of the addon, including the libraries and the
+# options addon, and attaches it to the workflow run as an artifact.
+name: Build
+
+on:
+  push:
+    branches: [ 'claude/**' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Luacheck
+        run: |
+          sudo apt-get install -y luarocks
+          luarocks install --local luacheck
+          /home/runner/.luarocks/bin/luacheck . --no-color -q
+
+      # -d packages everything without uploading it anywhere
+      - uses: BigWigsMods/packager@v2
+        with:
+          args: -d
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ShadowedUnitFrames
+          path: .release/*.zip
+          if-no-files-found: error
