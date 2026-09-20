@@ -4,7 +4,14 @@ local canCure = ShadowUF.Units.canCure
 
 local function getGradientColor(unit)
 	local maxHealth = UnitHealthMax(unit)
-	local percent = maxHealth > 0 and UnitHealth(unit) / maxHealth or 0
+	local health = UnitHealth(unit)
+
+	-- Not allowed to look at the health values, so we can't calculate a gradient for them
+	if( ShadowUF.API.IsSecret(maxHealth) or ShadowUF.API.IsSecret(health) ) then
+		return ShadowUF.db.profile.healthColors.green.r, ShadowUF.db.profile.healthColors.green.g, ShadowUF.db.profile.healthColors.green.b
+	end
+
+	local percent = maxHealth > 0 and health / maxHealth or 0
 	if( percent >= 1 ) then return ShadowUF.db.profile.healthColors.green.r, ShadowUF.db.profile.healthColors.green.g, ShadowUF.db.profile.healthColors.green.b end
 	if( percent == 0 ) then return ShadowUF.db.profile.healthColors.red.r, ShadowUF.db.profile.healthColors.red.g, ShadowUF.db.profile.healthColors.red.b end
 

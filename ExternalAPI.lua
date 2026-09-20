@@ -128,3 +128,31 @@ function ShadowUF.API.IsEventValid(event)
 
 	return validEvents[event]
 end
+
+--[[
+	Secret values
+
+	Newer clients return "secret" values from some APIs (unit health being the big one for us) when
+	the addon environment is tainted. Comparing, formatting or otherwise inspecting them throws an
+	error, they can only be handed back to a small set of functions such as the widget setters or
+	the number formatters. Everything below either checks for them up front, or degrades gracefully
+	when the client doesn't support the check at all.
+]]
+local issecretvalue = issecretvalue
+
+function ShadowUF.API.IsSecret(value)
+	if( not issecretvalue ) then return false end
+
+	-- Checking a secret can itself be restricted, if it errors we know enough to treat it as secret
+	local success, isSecret = pcall(issecretvalue, value)
+	return not success or isSecret
+end
+
+-- Formats a number we are not allowed to look at, the game's own formatter accepts secret values
+function ShadowUF.API.AbbreviateNumber(number)
+	if( AbbreviateLargeNumbers ) then
+		return AbbreviateLargeNumbers(number)
+	end
+
+	return ""
+end

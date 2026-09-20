@@ -229,7 +229,10 @@ local function createTagFunction(tags, resetCache)
 		end
 
 		for id, func in pairs(args) do
-			temp[id] = func(fontString.parent.unit, fontString.parent.unitOwner, fontString) or ""
+			-- Tags run arbitrary code and the data they use can be restricted by the client, if one
+			-- of them errors out we simply show nothing for it rather than breaking the whole frame
+			local success, text = pcall(func, fontString.parent.unit, fontString.parent.unitOwner, fontString)
+			temp[id] = success and text or ""
 		end
 
 		fontString:SetFormattedText(formattedText, unpack(temp))
@@ -326,6 +329,11 @@ function ShadowUF:Hex(r, g, b)
 end
 
 function ShadowUF:FormatLargeNumber(number)
+	-- Not allowed to look at the value, let the game format it for us
+	if( ShadowUF.API.IsSecret(number) ) then
+		return ShadowUF.API.AbbreviateNumber(number)
+	end
+
 	if( number < 9999 ) then
 		return number
 	elseif( number < 999999 ) then
@@ -338,6 +346,11 @@ function ShadowUF:FormatLargeNumber(number)
 end
 
 function ShadowUF:SmartFormatNumber(number)
+	-- Not allowed to look at the value, let the game format it for us
+	if( ShadowUF.API.IsSecret(number) ) then
+		return ShadowUF.API.AbbreviateNumber(number)
+	end
+
 	if( number < 999999 ) then
 		return number
 	elseif( number < 99999999 ) then

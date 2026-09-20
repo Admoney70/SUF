@@ -30,6 +30,7 @@ globals = {
 
 read_globals = {
 	"hooksecurefunc",
+	"issecretvalue",
 	"CopyTable",
 	"string.split",
 	"string.trim",
@@ -48,6 +49,7 @@ read_globals = {
 	"C_EventUtils",
 	"C_PartyInfo",
 	"C_Reputation",
+	"AbbreviateLargeNumbers",
 	"AuraUtil",
 	"C_Spell",
 	"C_Timer",
