@@ -83,8 +83,31 @@ function IncHeal:OnLayoutApplied(frame)
 	end
 end
 
+-- Fills the bar without looking at any of the values, everything here accepts restricted data
+local function setRestrictedBar(self, frame, bar, health, incAmount, maxHealth)
+	bar:SetMinMaxValues(0, maxHealth * (ShadowUF.db.profile.units[frame.unitType][self.frameKey].cap or 1.30))
+	bar:SetValue(health + incAmount)
+	bar:Show()
+end
+
 function IncHeal:PositionBar(frame, incAmount)
 	local bar = frame[self.frameKey]
+	local health = UnitHealth(frame.unit)
+	local maxHealth = UnitHealthMax(frame.unit)
+
+	-- The values are restricted, so we can't compare them to decide what to show or work out how
+	-- big the bar has to be. The bar setters do accept them, so the simple fill can still be tried,
+	-- but the sized and positioned version of the bar has to be hidden.
+	if( ShadowUF.API.IsSecret(incAmount) or ShadowUF.API.IsSecret(health) or ShadowUF.API.IsSecret(maxHealth) ) then
+		bar.total = nil
+
+		if( not bar.simple or not pcall(setRestrictedBar, self, frame, bar, health, incAmount, maxHealth) ) then
+			bar:Hide()
+		end
+
+		return
+	end
+
 	-- If incoming is <= 0 ir health is <= 0 we can hide it
 	if( incAmount <= 0 ) then
 		bar.total = nil
@@ -92,14 +115,12 @@ function IncHeal:PositionBar(frame, incAmount)
 		return
 	end
 
-	local health = UnitHealth(frame.unit)
 	if( health <= 0 ) then
 		bar.total = nil
 		bar:Hide()
 		return
 	end
 
-	local maxHealth = UnitHealthMax(frame.unit)
 	if( maxHealth <= 0 ) then
 		bar.total = nil
 		bar:Hide()
@@ -138,7 +159,11 @@ function IncHeal:UpdateFrame(frame)
 	if( not frame.visibility[self.frameKey] or not frame.visibility.healthBar ) then return end
 
 	local amount = UnitGetIncomingHeals(frame.unit) or 0
-	if( amount > 0 and frame.visibility.healAbsorb ) then
+	if( ShadowUF.API.IsSecret(amount) ) then
+		if( frame.visibility.healAbsorb and UnitGetTotalHealAbsorbs ) then
+			amount = amount + (UnitGetTotalHealAbsorbs(frame.unit) or 0)
+		end
+	elseif( amount > 0 and frame.visibility.healAbsorb ) then
 		amount = amount + (UnitGetTotalHealAbsorbs and UnitGetTotalHealAbsorbs(frame.unit) or 0)
 	end
 

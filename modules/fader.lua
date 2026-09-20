@@ -139,6 +139,14 @@ function Fader:CastStop(frame, event, unit, id)
 end
 
 
+-- When the values are restricted we aren't allowed to compare them, and a frame that stays visible
+-- is a lot less annoying than one that faded out when it shouldn't have, so call it not full
+local function isFull(current, max)
+	if( ShadowUF.API.IsSecret(current) or ShadowUF.API.IsSecret(max) ) then return false end
+
+	return current == max
+end
+
 function Fader:Update(frame, event)
 	-- In combat, fade back in
 	if( InCombatLockdown() or event == "PLAYER_REGEN_DISABLED" ) then
@@ -147,10 +155,10 @@ function Fader:Update(frame, event)
 	elseif( frame.fader.playerCasting ) then
 		startFading(frame, "in", ShadowUF.db.profile.units[frame.unitType].fader.combatAlpha, true)
 	-- Ether mana or energy is not at 100%, fade in
-	elseif( powerDepletes[UnitPowerType(frame.unit)] and UnitPower(frame.unit) ~= UnitPowerMax(frame.unit) ) then
+	elseif( powerDepletes[UnitPowerType(frame.unit)] and not isFull(UnitPower(frame.unit), UnitPowerMax(frame.unit)) ) then
 		startFading(frame, "in", ShadowUF.db.profile.units[frame.unitType].fader.combatAlpha)
 	-- Health is not at max, fade in
-	elseif( UnitHealth(frame.unit) ~= UnitHealthMax(frame.unit) ) then
+	elseif( not isFull(UnitHealth(frame.unit), UnitHealthMax(frame.unit)) ) then
 		startFading(frame, "in", ShadowUF.db.profile.units[frame.unitType].fader.combatAlpha)
 	-- Targetting somebody, fade in
 	elseif( frame.unitType == "player" and UnitExists("target") ) then
