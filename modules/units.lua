@@ -4,6 +4,19 @@ Units.zoneUnits = {["arena"] = "arena", ["arenapet"] = "arena", ["arenatarget"] 
 Units.remappedUnits = {["battleground"] = "arena", ["battlegroundpet"] = "arenapet", ["battlegroundtarget"] = "arenatarget", ["battlegroundtargettarget"] = "arenatargettarget"}
 Units.headerUnits = {["raid"] = true, ["party"] = true, ["maintank"] = true, ["mainassist"] = true, ["raidpet"] = true, ["partypet"] = true}
 
+-- These still describe the units that were removed from this build, drop anything that is left
+-- over so nothing tries to create a frame or read settings for a unit that no longer exists
+do
+	local validUnits = {}
+	for _, unit in pairs(ShadowUF.unitList) do validUnits[unit] = true end
+
+	for _, unitTable in pairs({Units.childUnits, Units.zoneUnits, Units.remappedUnits, Units.headerUnits}) do
+		for unit in pairs(unitTable) do
+			if( not validUnits[unit] ) then unitTable[unit] = nil end
+		end
+	end
+end
+
 local stateMonitor = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate")
 stateMonitor.raids = {}
 local playerClass = select(2, UnitClass("player"))

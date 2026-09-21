@@ -233,7 +233,7 @@ function Movers:Enable()
 
 	-- Force create zone headers
 	for type, zone in pairs(ShadowUF.Units.zoneUnits) do
-		if( ShadowUF.db.profile.units[type].enabled ) then
+		if( ShadowUF.db.profile.units[type] and ShadowUF.db.profile.units[type].enabled ) then
 			ShadowUF.Units:InitializeFrame(type)
 		end
 	end
