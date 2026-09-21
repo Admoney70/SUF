@@ -78,6 +78,8 @@ function ShadowUF:OnInitialize()
 			return tbl[index]
 	end})
 
+	self:CleanupRemovedUnits()
+
 	if( not self.db.profile.loadedLayout ) then
 		self:LoadDefaultLayout()
 	else
@@ -103,6 +105,21 @@ function ShadowUF.UnitAuraBySpell(unit, spell, filter)
 		if not name then break end
 		if (type(spell) == "string" and spell == name) or (type(spell) == "number" and spell == spellID) then
 			return ShadowUF.API.UnitAura(unit, index, filter)
+		end
+	end
+end
+
+-- Settings saved by a build that still had the units we no longer support would otherwise linger
+-- in the profile and show up as empty entries in the options
+function ShadowUF:CleanupRemovedUnits()
+	for unit in pairs(self.db.profile.units) do
+		if( not self.defaults.profile.units[unit] ) then
+			self.db.profile.units[unit] = nil
+			self.db.profile.positions[unit] = nil
+
+			for _, visibility in pairs(self.db.profile.visibility) do
+				visibility[unit] = nil
+			end
 		end
 	end
 end
@@ -568,6 +585,7 @@ function ShadowUF:ProfilesChanged()
 	if( resetTimer ) then resetTimer:Hide() end
 
 	self.db:RegisterDefaults(self.defaults)
+	self:CleanupRemovedUnits()
 
 	-- No active layout, register the default one
 	if( not self.db.profile.loadedLayout ) then
