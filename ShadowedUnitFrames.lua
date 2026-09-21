@@ -11,8 +11,8 @@ ShadowUF.playerUnit = "player"
 ShadowUF.enabledUnits = {}
 ShadowUF.modules = {}
 ShadowUF.moduleOrder = {}
-ShadowUF.unitList = {"player", "pet", "pettarget", "target", "targettarget", "targettargettarget", "focus", "focustarget", "party", "partypet", "partytarget", "partytargettarget", "raid", "raidpet", "boss", "bosstarget", "maintank", "maintanktarget", "mainassist", "mainassisttarget", "arena", "arenatarget", "arenapet", "battleground", "battlegroundtarget", "battlegroundpet", "arenatargettarget", "battlegroundtargettarget", "maintanktargettarget", "mainassisttargettarget", "bosstargettarget"}
-ShadowUF.fakeUnits = {["targettarget"] = true, ["targettargettarget"] = true, ["pettarget"] = true, ["arenatarget"] = true, ["arenatargettarget"] = true, ["focustarget"] = true, ["focustargettarget"] = true, ["partytarget"] = true, ["raidtarget"] = true, ["bosstarget"] = true, ["maintanktarget"] = true, ["mainassisttarget"] = true, ["battlegroundtarget"] = true, ["partytargettarget"] = true, ["battlegroundtargettarget"] = true, ["maintanktargettarget"] = true, ["mainassisttargettarget"] = true, ["bosstargettarget"] = true}
+ShadowUF.unitList = {"player", "pet", "pettarget", "target", "targettarget", "targettargettarget", "focus", "focustarget"}
+ShadowUF.fakeUnits = {["targettarget"] = true, ["targettargettarget"] = true, ["pettarget"] = true, ["focustarget"] = true, ["focustargettarget"] = true}
 L.units = {["raidpet"] = L["Raid pet"], ["PET"] = L["Pet"], ["VEHICLE"] = L["Vehicle"], ["arena"] = L["Arena"], ["arenapet"] = L["Arena Pet"], ["arenatarget"] = L["Arena Target"], ["arenatargettarget"] = L["Arena Target of Target"], ["boss"] = L["Boss"], ["bosstarget"] = L["Boss Target"], ["focus"] = L["Focus"], ["focustarget"] = L["Focus Target"], ["mainassist"] = L["Main Assist"], ["mainassisttarget"] = L["Main Assist Target"], ["maintank"] = L["Main Tank"], ["maintanktarget"] = L["Main Tank Target"], ["party"] = L["Party"], ["partypet"] = L["Party Pet"], ["partytarget"] = L["Party Target"], ["pet"] = L["Pet"], ["pettarget"] = L["Pet Target"], ["player"] = L["Player"],["raid"] = L["Raid"], ["target"] = L["Target"], ["targettarget"] = L["Target of Target"], ["targettargettarget"] = L["Target of Target of Target"], ["battleground"] = L["Battleground"], ["battlegroundpet"] = L["Battleground Pet"], ["battlegroundtarget"] = L["Battleground Target"], ["partytargettarget"] = L["Party Target of Target"], ["battlegroundtargettarget"] = L["Battleground Target of Target"], ["maintanktargettarget"] = L["Main Tank Target of Target"], ["mainassisttargettarget"] = L["Main Assist Target of Target"], ["bosstargettarget"] = L["Boss Target of Target"]}
 L.shortUnits = {["battleground"] = L["BG"], ["battlegroundtarget"] = L["BG Target"], ["battlegroundpet"] = L["BG Pet"], ["battlegroundtargettarget"] = L["BG ToT"], ["arenatargettarget"] = L["Arena ToT"], ["partytargettarget"] = L["Party ToT"], ["bosstargettarget"] = L["Boss ToT"], ["maintanktargettarget"] = L["MT ToT"], ["mainassisttargettarget"] = L["MA ToT"]}
 
@@ -169,11 +169,13 @@ function ShadowUF:CheckUpgrade()
 	end
 	if( revision <= 58 ) then
 		for unit, config in pairs(self.db.profile.units) do
-			if config.text then
+			-- Saved settings can contain units this build doesn't have any more
+			local defaultUnit = self.defaults.profile.units[unit]
+			if config.text and defaultUnit then
 				local i = 1
 				while i <= #config.text do
 					local text
-					if rawget(config.text, i) or i <= #(self.defaults.profile.units[unit].text) then
+					if rawget(config.text, i) or i <= #(defaultUnit.text) then
 						text = config.text[i]
 					end
 
@@ -241,11 +243,6 @@ function ShadowUF:CheckUpgrade()
 		if( ShadowUF.db.profile.font.extra == "MONOCHROME" ) then
 			ShadowUF.db.profile.font.extra = ""
 		end
-	end
-
-	if( revision <= 47 ) then
-		local config = self.db.profile.units
-		config.player.comboPoints = config.target.comboPoints
 	end
 
 	if( revision <= 45 ) then
@@ -384,7 +381,6 @@ function ShadowUF:LoadUnitDefaults()
 	self.defaults.profile.units.player.druidBar = {enabled = false}
 	self.defaults.profile.units.player.xpBar = {enabled = false}
 	self.defaults.profile.units.player.fader = {enabled = false}
-	self.defaults.profile.units.player.comboPoints = {enabled = true, isBar = true}
 	self.defaults.profile.units.player.holyPower = {enabled = true, isBar = true}
 	self.defaults.profile.units.player.soulShards = {enabled = true, isBar = true}
 	table.insert(self.defaults.profile.units.player.text, {enabled = true, text = "", anchorTo = "", anchorPoint = "C", size = 0, x = 0, y = 0, default = true})
@@ -407,92 +403,10 @@ function ShadowUF:LoadUnitDefaults()
 	-- TARGET
 	self.defaults.profile.units.target.enabled = true
 	self.defaults.profile.units.target.indicators.questBoss = {enabled = true, size = 0, x = 0, y = 0}
-	self.defaults.profile.units.target.comboPoints = {enabled = false, isBar = true}
 	self.defaults.profile.units.target.auras.buffs.approximateEnemyData = true
 	-- TARGETTARGET/TARGETTARGETTARGET
 	self.defaults.profile.units.targettarget.enabled = true
 	self.defaults.profile.units.targettargettarget.enabled = true
-	-- PARTY
-	self.defaults.profile.units.party.enabled = true
-	self.defaults.profile.units.party.auras.debuffs.maxRows = 1
-	self.defaults.profile.units.party.auras.buffs.maxRows = 1
-	self.defaults.profile.units.party.fader = {enabled = false, combatAlpha = 1.0, inactiveAlpha = 0.60}
-	self.defaults.profile.units.party.combatText.enabled = false
-	self.defaults.profile.units.party.indicators.phase = {enabled = true, size = 0, x = 0, y = 0}
-	-- ARENA
-	self.defaults.profile.units.arena.enabled = false
-	self.defaults.profile.units.arena.attribPoint = "TOP"
-	self.defaults.profile.units.arena.attribAnchorPoint = "LEFT"
-	self.defaults.profile.units.arena.auras.debuffs.maxRows = 1
-	self.defaults.profile.units.arena.auras.buffs.maxRows = 1
-	self.defaults.profile.units.arena.offset = 0
-	-- BATTLEGROUND
-	self.defaults.profile.units.battleground.enabled = false
-	self.defaults.profile.units.battleground.attribPoint = "TOP"
-	self.defaults.profile.units.battleground.attribAnchorPoint = "LEFT"
-	self.defaults.profile.units.battleground.auras.debuffs.maxRows = 1
-	self.defaults.profile.units.battleground.auras.buffs.maxRows = 1
-	self.defaults.profile.units.battleground.offset = 0
-	-- BOSS
-	self.defaults.profile.units.boss.enabled = false
-	self.defaults.profile.units.boss.attribPoint = "TOP"
-	self.defaults.profile.units.boss.attribAnchorPoint = "LEFT"
-	self.defaults.profile.units.boss.auras.debuffs.maxRows = 1
-	self.defaults.profile.units.boss.auras.buffs.maxRows = 1
-	self.defaults.profile.units.boss.offset = 0
-	self.defaults.profile.units.boss.altPowerBar.enabled = true
-	-- RAID
-	self.defaults.profile.units.raid.groupBy = "GROUP"
-	self.defaults.profile.units.raid.sortOrder = "ASC"
-	self.defaults.profile.units.raid.sortMethod = "INDEX"
-	self.defaults.profile.units.raid.attribPoint = "TOP"
-	self.defaults.profile.units.raid.attribAnchorPoint = "RIGHT"
-	self.defaults.profile.units.raid.offset = 0
-	self.defaults.profile.units.raid.filters = {[1] = true, [2] = true, [3] = true, [4] = true, [5] = true, [6] = true, [7] = true, [8] = true}
-	self.defaults.profile.units.raid.fader = {enabled = false, combatAlpha = 1.0, inactiveAlpha = 0.60}
-	self.defaults.profile.units.raid.combatText.enabled = false
-	-- RAID PET
-	self.defaults.profile.units.raidpet.groupBy = "GROUP"
-	self.defaults.profile.units.raidpet.sortOrder = "ASC"
-	self.defaults.profile.units.raidpet.sortMethod = "INDEX"
-	self.defaults.profile.units.raidpet.attribPoint = "TOP"
-	self.defaults.profile.units.raidpet.attribAnchorPoint = "RIGHT"
-	self.defaults.profile.units.raidpet.offset = 0
-	self.defaults.profile.units.raidpet.filters = {[1] = true, [2] = true, [3] = true, [4] = true, [5] = true, [6] = true, [7] = true, [8] = true}
-	self.defaults.profile.units.raidpet.fader = {enabled = false, combatAlpha = 1.0, inactiveAlpha = 0.60}
-	self.defaults.profile.units.raidpet.combatText.enabled = false
-	-- MAINTANK
-	-- self.defaults.profile.units.maintank.roleFilter = "TANK"
-	self.defaults.profile.units.maintank.groupFilter = "MAINTANK"
-	self.defaults.profile.units.maintank.groupBy = "GROUP"
-	self.defaults.profile.units.maintank.sortOrder = "ASC"
-	self.defaults.profile.units.maintank.sortMethod = "INDEX"
-	self.defaults.profile.units.maintank.attribPoint = "TOP"
-	self.defaults.profile.units.maintank.attribAnchorPoint = "RIGHT"
-	self.defaults.profile.units.maintank.offset = 0
-	self.defaults.profile.units.maintank.fader = {enabled = false, combatAlpha = 1.0, inactiveAlpha = 0.60}
-	-- MAINASSIST
-	self.defaults.profile.units.mainassist.groupFilter = "MAINASSIST"
-	self.defaults.profile.units.mainassist.groupBy = "GROUP"
-	self.defaults.profile.units.mainassist.sortOrder = "ASC"
-	self.defaults.profile.units.mainassist.sortMethod = "INDEX"
-	self.defaults.profile.units.mainassist.attribPoint = "TOP"
-	self.defaults.profile.units.mainassist.attribAnchorPoint = "RIGHT"
-	self.defaults.profile.units.mainassist.offset = 0
-	self.defaults.profile.units.mainassist.fader = {enabled = false, combatAlpha = 1.0, inactiveAlpha = 0.60}
-	-- PARTYPET
-	self.defaults.profile.positions.partypet.anchorTo = "$parent"
-	self.defaults.profile.positions.partypet.anchorPoint = "RB"
-	self.defaults.profile.units.partypet.fader = {enabled = false, combatAlpha = 1.0, inactiveAlpha = 0.60}
-	-- PARTYTARGET
-	self.defaults.profile.positions.partytarget.anchorTo = "$parent"
-	self.defaults.profile.positions.partytarget.anchorPoint = "RT"
-	self.defaults.profile.units.partytarget.fader = {enabled = false, combatAlpha = 1.0, inactiveAlpha = 0.60}
-	-- PARTYTARGETTARGET
-	self.defaults.profile.positions.partytarget.anchorTo = "$parent"
-	self.defaults.profile.positions.partytarget.anchorPoint = "RT"
-	self.defaults.profile.units.partytarget.fader = {enabled = false, combatAlpha = 1.0, inactiveAlpha = 0.60}
-
 	-- Aura indicators
 	self.defaults.profile.auraIndicators = {
 		disabled = {},

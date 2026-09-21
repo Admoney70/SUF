@@ -146,6 +146,7 @@ function Combo:UpdateBarBlocks(frame, event, unit, powerType)
 	if( event and powerType ~= pointsFrame.cpConfig.eventType ) then return end
 
 	local max = self.GetMaxPoints and self:GetMaxPoints() or UnitPowerMax("player", pointsFrame.cpConfig.powerType)
+	if( ShadowUF.API.IsSecret(max) ) then return end
 	if( max == 0 or pointsFrame.visibleBlocks == max ) then return end
 
 	pointsFrame.cpConfig.max = max
@@ -177,6 +178,19 @@ function Combo:Update(frame, event, unit, powerType)
 	if( event and frame[key].cpConfig.eventType and frame[key].cpConfig.eventType ~= powerType ) then return end
 
 	local points = self:GetPoints(unit)
+
+	-- The point total is restricted, we can't compare it to work out how many to light up
+	if( ShadowUF.API.IsSecret(points) ) then
+		if( ShadowUF.db.profile.units[frame.unitType][key].isBar ) then
+			ShadowUF.Layout:SetBarVisibility(frame, key, ShadowUF.db.profile.units[frame.unitType][key].showAlways)
+		end
+
+		for _, pointTexture in pairs(frame[key].points) do
+			pointTexture:Hide()
+		end
+
+		return
+	end
 
 	-- Bar display, hide it if we don't have any combo points
 	if( ShadowUF.db.profile.units[frame.unitType][key].isBar ) then

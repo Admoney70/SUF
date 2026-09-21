@@ -340,7 +340,6 @@ function ShadowUF:LoadDefaultLayout(useMerge)
 			runeBar = {enabled = true, background = false, height = 0.40, order = 70},
 			totemBar = {enabled = true, background = false, height = 0.40, order = 70},
 			druidBar = {enabled = true, background = true, height = 0.40, order = 70},
-			comboPoints = {enabled = true, anchorTo = "$parent", order = 60, anchorPoint = "BR", x = -3, y = 8, size = 14, spacing = -4, growth = "LEFT", isBar = true, height = 0.40},
 			soulShards = {anchorTo = "$parent", order = 60, height = 0.40, anchorPoint = "BR", x = -8, y = 6, size = 12, spacing = -2, growth = "LEFT", isBar = true, showAlways = true},
 			holyPower = {anchorTo = "$parent", order = 60, height = 0.40, anchorPoint = "BR", x = -3, y = 6, size = 14, spacing = -4, growth = "LEFT", isBar = true, showAlways = true},
 			indicators = {
@@ -787,7 +786,6 @@ function ShadowUF:LoadDefaultLayout(useMerge)
 			scale = 1.0,
 			portrait = {enabled = true, alignment = "RIGHT", fullAfter = 50},
 			castBar = {order = 60},
-			comboPoints = {enabled = false, anchorTo = "$parent", order = 60, anchorPoint = "BR", x = -3, y = 8, size = 14, spacing = -4, growth = "LEFT", isBar = true, height = 0.40},
 			indicators = {
                 resurrect = {enabled = true, anchorPoint = "RC", size = 28, x = -39, y = -1, anchorTo = "$parent"},
                 questBoss = {enabled = true, anchorPoint = "BR", size = 22, x = 9, y = 24, anchorTo = "$parent"},

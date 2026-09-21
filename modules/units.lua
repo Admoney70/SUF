@@ -664,6 +664,9 @@ end
 
 function Units:CheckGroupVisibility()
 	if( not ShadowUF.db.profile.locked ) then return end
+	-- Group frames are not part of this build
+	if( not ShadowUF.db.profile.units.raid or not ShadowUF.db.profile.units.party ) then return end
+
 	local raid = headerFrames.raid and not ShadowUF.db.profile.units.raid.frameSplit and headerFrames.raid or headerFrames.raidParent
 	local party = headerFrames.party
 	if( party ) then
